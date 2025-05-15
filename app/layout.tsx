@@ -24,7 +24,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr" suppressHydrationWarning>
-      <body className={`${poppins.className} antialiased scroll-smooth`}>
+      <body
+        className={`${poppins.className} antialiased scroll-smooth overflow-y-auto max-h-screen `}
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -32,7 +34,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
-            <main>{children}</main>
+            <main className="">{children}</main>
             <Toaster />
           </AuthProvider>
         </ThemeProvider>

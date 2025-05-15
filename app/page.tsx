@@ -8,14 +8,18 @@ export default function Home() {
     <div className="">
       {/* header */}
       <Header />
-      <main className="min-h-[65dvh] flex flex-col w-full px-4 pb-6 transition-all duration-500 ease-in-out">
+      <main
+        className="min-h-[65dvh] flex flex-col w-full 
+       pb-6 transition-all duration-500 ease-in-out"
+      >
         {/* popular */}
         <PopularContent />
-        {/* new content */}
-        <NewContent />
 
         {/* Latest release */}
         <LatestReleases />
+
+        {/* new content */}
+        <NewContent />
 
         {/* footer */}
       </main>

@@ -7,19 +7,26 @@ import React from "react";
 
 const LatestReleases = () => {
   return (
-    <div className="w-full flex flex-col gap-4 pt-6 mt-6 transition-all duration-500 ease-in-out">
-      <div className="flex items-center gap-4 flex-wrap transition-all duration-500 ease-in-out">
+    <div
+      className="w-full flex flex-col gap-6 py-14 transition-all 
+    duration-500 ease-in-out px-4 shadow dark:bg-black bg-white"
+    >
+      <div
+        className="flex items-center gap-4 flex-wrap transition-all duration-500 ease-in-out
+       mx-auto max-w-7xl w-full
+      "
+      >
         <h2 className="text-2xl font-bold">Dernierement ajoutés</h2>
         {/* <ArrowBigRight className="text-primary" /> */}
       </div>
 
       {/* contents */}
       <div
-        className="transition-all duration-500 ease-in-out flex flex-col gap-4 md:grid 
-      md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6"
+        className="transition-all duration-500 ease-in-out flex flex-col gap-4 md:gap-y-8 md:grid 
+      md:grid-cols-2  xl:grid-cols-4 2xl:grid-cols-4  mx-auto max-w-7xl "
       >
         {ContentsData.map((content, idx) => (
-          <div key={idx}>
+          <div key={idx} className="w-full">
             <div
               className="flex w-full items-center gap-4 justify-start pb-4 md:pb-0
              md:border-b-0 border-b-[0.1px] border-secondary transition-all duration-500 ease-in-out"
