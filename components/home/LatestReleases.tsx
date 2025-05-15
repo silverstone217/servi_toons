@@ -23,7 +23,7 @@ const LatestReleases = () => {
       {/* contents */}
       <div
         className="transition-all duration-500 ease-in-out flex flex-col gap-4 md:gap-y-8 md:grid 
-      md:grid-cols-2  xl:grid-cols-4 2xl:grid-cols-4  mx-auto max-w-7xl "
+      md:grid-cols-2  lg:grid-cols-3 xl:grid-cols-4  mx-auto max-w-7xl "
       >
         {ContentsData.map((content, idx) => (
           <div key={idx} className="w-full">
