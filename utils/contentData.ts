@@ -23,7 +23,7 @@ export const ContentsData = [
     image: manga2,
     description:
       "Une jeune fille timide découvre qu'elle a des pouvoirs magiques et doit naviguer dans les complexités de l'Académie Lunaire.",
-    category: "webtoon",
+    category: "manhua",
     tags: ["magie", "romance", "ecole", "mystere"],
     target: "shojo",
     authorId: "auth002",
@@ -51,7 +51,7 @@ export const ContentsData = [
     tags: ["action", "historique", "samourai", "vengeance"],
     target: "seinen",
     authorId: "auth004",
-    language: "ja",
+    language: "jp",
   },
   {
     title: "Le Voyage de Kiko",
@@ -59,7 +59,7 @@ export const ContentsData = [
     image: manga5,
     description:
       "Un jeune garçon curieux part à la découverte du monde qui l'entoure, rencontrant des créatures fantastiques.",
-    category: "webtoon",
+    category: "manhwa",
     tags: ["aventure", "enfant", "decouverte", "fantaisie"],
     target: "kodomo",
     authorId: "auth005",
