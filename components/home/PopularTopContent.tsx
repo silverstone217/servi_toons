@@ -73,7 +73,7 @@ const PopularTopContent = () => {
               priority
               width={1000}
               height={800}
-              className="w-40 h-56 object-cover rounded-lg shadow-md"
+              className="md:w-40 w-32 h-44 md:h-56 object-cover rounded-lg shadow-lg"
             />
             {/* info */}
             <div
