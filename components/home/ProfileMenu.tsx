@@ -12,8 +12,15 @@ import AvatarUser from "../AvatarUser";
 import { Button } from "../ui/button";
 import { signOut } from "next-auth/react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export const ProfileMenuBigScreen = () => {
+  const router = useRouter();
+
+  const handleNavigate = (url: string) => {
+    router.push(`/${url}`);
+  };
+
   const handleSignOut = async () => {
     try {
       await signOut();
@@ -34,7 +41,9 @@ export const ProfileMenuBigScreen = () => {
         <DropdownMenuSeparator />
         <DropdownMenuItem>Profil</DropdownMenuItem>
         <DropdownMenuItem>Bookmark</DropdownMenuItem>
-        <DropdownMenuItem>Dashboard</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleNavigate("dashboard")}>
+          Dashboard
+        </DropdownMenuItem>
         <DropdownMenuItem>Ajouter un contenu</DropdownMenuItem>
         <DropdownMenuItem disabled>Subscription</DropdownMenuItem>
         <DropdownMenuSeparator />
