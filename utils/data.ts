@@ -57,9 +57,14 @@ export const DashboardPages = [
     icon: LayoutDashboard,
   },
   {
-    href: "/contents",
+    href: "/mes-contenus",
     label: "Mes publications",
     icon: GalleryThumbnails,
+  },
+  {
+    href: "#",
+    label: "Illustrations",
+    icon: GalleryHorizontal,
   },
 ];
 
