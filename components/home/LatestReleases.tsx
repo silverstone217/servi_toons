@@ -28,7 +28,7 @@ const LatestReleases = () => {
         {ContentsData.map((content, idx) => (
           <div key={idx} className="w-full">
             <div
-              className="flex w-full items-center gap-4 justify-start pb-4 md:pb-0
+              className="flex w-full items-start gap-4 justify-start pb-4 md:pb-0
              md:border-b-0 border-b-[0.1px] border-secondary transition-all duration-500 ease-in-out"
             >
               {/* image */}

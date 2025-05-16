@@ -4,7 +4,7 @@ import { ArrowBigRight } from "lucide-react";
 import Image, { StaticImageData } from "next/image";
 import React, { Suspense } from "react";
 
-const PopularContent = () => {
+const NewContents = () => {
   return (
     <div
       className="w-full flex flex-col gap-6 pt-8 md:pt-12 px-4 bg-gray-100 dark:bg-gray-900
@@ -15,7 +15,7 @@ const PopularContent = () => {
       mx-auto max-w-7xl justify-start w-full
       "
       >
-        <h2 className="text-2xl font-bold">Contenus Populaires</h2>
+        <h2 className="text-2xl font-bold">Nouveaux Contenus </h2>
         <ArrowBigRight className="text-primary" />
       </div>
       {/* contents */}
@@ -43,7 +43,7 @@ const PopularContent = () => {
   );
 };
 
-export default PopularContent;
+export default NewContents;
 
 type CardProps = {
   title: string;

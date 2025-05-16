@@ -1,7 +1,7 @@
 import Header from "@/components/home/Header";
 import LatestReleases from "@/components/home/LatestReleases";
-import NewContent from "@/components/home/NewContent";
-import PopularContent from "@/components/home/PopularContent";
+import NewContents from "@/components/home/NewContents";
+import PopularTopContent from "@/components/home/PopularTopContent";
 
 export default function Home() {
   return (
@@ -13,13 +13,13 @@ export default function Home() {
        pb-6 transition-all duration-500 ease-in-out"
       >
         {/* popular */}
-        <PopularContent />
+        <PopularTopContent />
 
         {/* Latest release */}
         <LatestReleases />
 
         {/* new content */}
-        <NewContent />
+        <NewContents />
 
         {/* footer */}
       </main>

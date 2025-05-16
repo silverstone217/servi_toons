@@ -12,7 +12,7 @@ export const ContentsData = [
     description:
       "Un jeune chevalier découvre un ancien artefact et se lance dans une quête pour sauver le royaume.",
     category: "manga",
-    tags: ["aventure", "fantaisie", "magie", "combat"],
+    tags: ["adventure", "fantaisy", "magic", "fight"],
     target: "shonen",
     authorId: "auth001",
     language: "en",
@@ -24,7 +24,7 @@ export const ContentsData = [
     description:
       "Une jeune fille timide découvre qu'elle a des pouvoirs magiques et doit naviguer dans les complexités de l'Académie Lunaire.",
     category: "manhua",
-    tags: ["magie", "romance", "ecole", "mystere"],
+    tags: ["magic", "romance", "school life", "drama"],
     target: "shojo",
     authorId: "auth002",
     language: "es",
@@ -36,7 +36,7 @@ export const ContentsData = [
     description:
       "Une tranche de vie humoristique suivant le quotidien d'une jeune femme et de ses amis à Tokyo.",
     category: "manga",
-    tags: ["comedie", "slice of life", "amitié", "ville"],
+    tags: ["comedy", "slice of life", "psychology"],
     target: "josei",
     authorId: "auth003",
     language: "fr",
@@ -48,7 +48,7 @@ export const ContentsData = [
     description:
       "Un samouraï solitaire erre dans le Japon féodal, cherchant à venger la mort de son maître.",
     category: "manga",
-    tags: ["action", "historique", "samourai", "vengeance"],
+    tags: ["action", "historique", "samurai", "revenge"],
     target: "seinen",
     authorId: "auth004",
     language: "jp",
@@ -60,7 +60,7 @@ export const ContentsData = [
     description:
       "Un jeune garçon curieux part à la découverte du monde qui l'entoure, rencontrant des créatures fantastiques.",
     category: "manhwa",
-    tags: ["aventure", "enfant", "decouverte", "fantaisie"],
+    tags: ["adventure", "fantasy"],
     target: "kodomo",
     authorId: "auth005",
     language: "fr",

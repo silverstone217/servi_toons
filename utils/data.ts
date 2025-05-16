@@ -109,7 +109,7 @@ export const TagsData = [
     value: "thriller",
   },
   {
-    label: "Fantastique",
+    label: "Fantaisie",
     value: "fantasy",
   },
   {
@@ -162,7 +162,7 @@ export const TagsData = [
   },
   {
     label: "Vie scolaire",
-    value: "School life",
+    value: "school life",
   },
   {
     label: "Psychologie",
@@ -183,6 +183,30 @@ export const TagsData = [
   {
     label: "Science",
     value: "science",
+  },
+  {
+    label: "Magie",
+    value: "magic",
+  },
+  {
+    label: "Mystere",
+    value: "mystery",
+  },
+  {
+    label: "Combat",
+    value: "fight",
+  },
+  {
+    label: "Vengeance",
+    value: "revenge",
+  },
+  {
+    label: "Samourai",
+    value: "samurai",
+  },
+  {
+    label: "Ninja",
+    value: "ninja",
   },
   {
     label: "Autre",

@@ -1,7 +1,7 @@
 "use client";
 import { ArrowBigRight } from "lucide-react";
 import React, { Suspense } from "react";
-import { CardContent } from "./PopularContent";
+import { CardContent } from "./NewContents";
 import { ContentsData } from "@/utils/contentData";
 
 const NewContent = () => {
