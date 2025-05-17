@@ -105,3 +105,35 @@ export const addContent = async (newContent: newContentType) => {
     contentId: addContent.id,
   };
 };
+
+// GET MY CONTENTS
+export const getMyContents = async () => {
+  const user = await getUser();
+  if (!user) {
+    return {
+      error: true,
+      message: "Veuillez vous connecter pour continuer.",
+      data: [],
+    };
+  }
+
+  const contents = await prisma.content.findMany({
+    where: { userId: user.id },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  if (!contents || contents.length < 1) {
+    return {
+      error: true,
+      message: "Vous n'avez pas encore du contenu!",
+      data: [],
+    };
+  }
+  return {
+    error: false,
+    message: "Contenus trouvés",
+    data: contents,
+  };
+};

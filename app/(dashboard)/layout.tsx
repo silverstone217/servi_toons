@@ -16,7 +16,11 @@ async function DashboardLayout({ children }: DashboardLayoutProps) {
   //   }
 
   return (
-    <div className="flex flex-col lg:flex-row lg:overflow-hidden w-full lg:h-screen">
+    <div
+      className="flex flex-col lg:flex-row lg:overflow-hidden w-full lg:h-screen
+    transition-all duration-500 ease-in-out
+    "
+    >
       {/* header */}
       <HeaderSmallScreen />
 
@@ -24,11 +28,14 @@ async function DashboardLayout({ children }: DashboardLayoutProps) {
       <AsideBigScreen />
 
       {/* main */}
-      <main className="flex-1 flex flex-col w-full h-full overflow-x-hidden lg:overflow-y-auto">
+      <main
+        className="flex-1 flex flex-col w-full h-full overflow-x-hidden lg:overflow-y-auto
+      transition-all duration-500 ease-in-out"
+      >
         {!user ? (
           <LogInToContinue />
         ) : (
-          <main className="pt-20 lg:pt-8 px-4 pb-8 container mx-auto w-full">
+          <main className="pt-20 lg:pt-8 px-4 pb-8 container mx-auto w-full transition-all duration-500 ease-in-out">
             {children}
           </main>
         )}

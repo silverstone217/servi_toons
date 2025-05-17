@@ -1,10 +1,13 @@
-import AddNewContentForm from "@/components/dashboard/contents/AddNewContentForm";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import React, { Suspense } from "react";
+import MainMyContentComponent from "./MainMyContentComponent";
+import { getMyContents } from "@/actions/contentsActions";
 
-function MyContentsPAge() {
+async function MyContentsPAge() {
+  const contents = await getMyContents();
+
   return (
     <div>
       <br />
@@ -19,12 +22,15 @@ function MyContentsPAge() {
       <br />
 
       {/* List and filters */}
-      <div>
-        <h2>Mes contenus</h2>
-
-        <br />
-        <AddNewContentForm />
-      </div>
+      <div></div>
+      <br />
+      {contents.error ? (
+        <p className="text-gray-500 text-center mt-2">{contents.message}</p>
+      ) : (
+        <Suspense fallback={<p>Chargement...</p>}>
+          <MainMyContentComponent contents={contents.data} />
+        </Suspense>
+      )}
     </div>
   );
 }
