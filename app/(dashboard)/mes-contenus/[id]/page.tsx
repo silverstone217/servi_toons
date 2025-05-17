@@ -13,7 +13,7 @@ async function MyContentPage({ params }: Props) {
   const { id } = await params;
   const user = await getUser();
 
-  if (!id) {
+  if (!id || !user) {
     redirect("/mes-contenus");
   }
 
@@ -24,10 +24,10 @@ async function MyContentPage({ params }: Props) {
     <div>
       MyContentPage
       <p>
-        <span>content ID : --- {id}</span>
+        <span>content ID :{id}</span>
         <br />
         <span>
-          User ID: {user?.id} / ContentUSERID : {myContent?.userId}
+          User ID: {user.id} / ContentUSERID : {myContent?.userId}
         </span>
       </p>
     </div>

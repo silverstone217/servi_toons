@@ -134,7 +134,7 @@ export const getMyContents = async () => {
   return {
     error: false,
     message: "Contenus trouvés",
-    data: contents,
+    data: contents.filter((con) => con.userId === user.id),
   };
 };
 
