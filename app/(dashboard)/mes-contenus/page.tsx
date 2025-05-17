@@ -1,3 +1,4 @@
+import AddNewContentForm from "@/components/dashboard/contents/AddNewContentForm";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Link from "next/link";
@@ -20,6 +21,9 @@ function MyContentsPAge() {
       {/* List and filters */}
       <div>
         <h2>Mes contenus</h2>
+
+        <br />
+        <AddNewContentForm />
       </div>
     </div>
   );

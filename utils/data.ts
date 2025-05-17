@@ -194,10 +194,6 @@ export const TagsData = [
     value: "magic",
   },
   {
-    label: "Mystere",
-    value: "mystery",
-  },
-  {
     label: "Combat",
     value: "fight",
   },

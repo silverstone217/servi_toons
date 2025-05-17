@@ -27,12 +27,12 @@ export default function RootLayout({
       <body className={`${poppins.className} antialiased scroll-smooth`}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
           <AuthProvider>
-            <main className="">{children}</main>
+            <main>{children}</main>
             <Toaster />
           </AuthProvider>
         </ThemeProvider>

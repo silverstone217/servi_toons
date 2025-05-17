@@ -1,9 +1,9 @@
-import AddNewContentForm from "@/components/dashboard/contents/AddNewContentForm";
+import AddContenteForm from "@/components/dashboard/contents/AddContenteForm";
 import React from "react";
 
 function AddContentPage() {
   return (
-    <div>
+    <div className="flex flex-col gap-10 ">
       <div className="max-w-lg space-y-2">
         <h2 className="text-2xl font-medium">Ajouter un nouveau contenu</h2>
         <p className="text-sm text-pretty opacity-90">
@@ -12,8 +12,9 @@ function AddContentPage() {
         </p>
       </div>
 
-      <br />
-      <AddNewContentForm />
+      {/* form */}
+
+      <AddContenteForm />
     </div>
   );
 }

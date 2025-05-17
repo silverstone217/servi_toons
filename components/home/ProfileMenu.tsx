@@ -44,7 +44,11 @@ export const ProfileMenuBigScreen = () => {
         <DropdownMenuItem onClick={() => handleNavigate("dashboard")}>
           Dashboard
         </DropdownMenuItem>
-        <DropdownMenuItem>Ajouter un contenu</DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => handleNavigate("mes-contenus/nouveau")}
+        >
+          Ajouter un contenu
+        </DropdownMenuItem>
         <DropdownMenuItem disabled>Subscription</DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>

@@ -23,7 +23,7 @@ interface SelectProps {
   name?: string;
 }
 
-const SelectComponent: React.FC<SelectProps> = ({
+const SelectComponent = ({
   data,
   isDisabled = false,
   isRequired = false,
@@ -31,7 +31,7 @@ const SelectComponent: React.FC<SelectProps> = ({
   value,
   onChangeValue,
   name,
-}) => {
+}: SelectProps) => {
   return (
     <Select
       required={isRequired}

@@ -28,7 +28,8 @@ const AsideBigScreen = () => {
   return (
     <aside
       className="hidden lg:flex flex-col gap-4 max-w-80 border-r-2 h-full
-     overflow-x-hidden overflow-y-auto transition-all duration-500 ease-in-out"
+     overflow-x-hidden overflow-y-auto transition-all duration-500 ease-in-out
+     "
     >
       {/*  logo top*/}
       <div className="p-4 pt-8">

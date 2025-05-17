@@ -86,14 +86,14 @@ const AddNewContentForm = () => {
   return (
     <form
       className="w-full flex flex-col gap-6
-    transition-all duration-500 ease-in-out
+    transition-all duration-500 ease-in-out 
     "
       onSubmit={(e) => {
         e.preventDefault();
         handleSubmit();
       }}
     >
-      {/* info importa */}
+      {/* info importante */}
       <div
         className="w-full flex flex-col gap-4 p-4 border-2 rounded-lg 
       transition-all duration-500 ease-in-out"

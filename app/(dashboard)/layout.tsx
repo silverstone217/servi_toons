@@ -16,22 +16,23 @@ async function DashboardLayout({ children }: DashboardLayoutProps) {
   //   }
 
   return (
-    <div
-      className="flex flex-col lg:flex-row lg:h-dvh lg:overflow-hidden
-     transition-all duration-500 ease-in-out"
-    >
+    <div className="flex flex-col lg:flex-row lg:overflow-hidden w-full lg:h-screen">
       {/* header */}
       <HeaderSmallScreen />
-      <AsideBigScreen />
-      <main
-        className="transition-all duration-500 lg:flex-1
-      ease-in-out lg:h-full lg:overflow-x-hidden lg:overflow-y-auto"
-      >
-        <div className="lg:pt-8 px-4 pb-4 mx-auto max-w-7xl pt-20">
-          {!user ? <LogInToContinue /> : children}
-        </div>
-      </main>
+
       {/* aside */}
+      <AsideBigScreen />
+
+      {/* main */}
+      <main className="flex-1 flex flex-col w-full h-full overflow-x-hidden lg:overflow-y-auto">
+        {!user ? (
+          <LogInToContinue />
+        ) : (
+          <main className="pt-20 lg:pt-8 px-4 pb-8 container mx-auto w-full">
+            {children}
+          </main>
+        )}
+      </main>
     </div>
   );
 }
