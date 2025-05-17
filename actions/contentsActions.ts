@@ -137,3 +137,32 @@ export const getMyContents = async () => {
     data: contents,
   };
 };
+
+// GET MY CONTENT BY ID
+export const getMyContentByID = async (id: string) => {
+  const user = await getUser();
+  if (!user) {
+    return {
+      error: true,
+      message: "Veuillez vous connecter pour continuer.",
+      data: null,
+    };
+  }
+
+  const content = await prisma.content.findUnique({
+    where: { userId: user.id, id },
+  });
+
+  if (!content) {
+    return {
+      error: true,
+      message: "Ce comptenu n'existe pas ou a été supprimé!",
+      data: null,
+    };
+  }
+  return {
+    error: false,
+    message: "Contenu trouvé",
+    data: content,
+  };
+};

@@ -1,3 +1,5 @@
+import { getUser } from "@/actions/authAction";
+import { getMyContentByID } from "@/actions/contentsActions";
 import { redirect } from "next/navigation";
 import React from "react";
 
@@ -9,12 +11,27 @@ type Props = {
 
 async function MyContentPage({ params }: Props) {
   const { id } = await params;
+  const user = await getUser();
 
   if (!id) {
     redirect("/mes-contenus");
   }
 
-  return <div>MyContentPage --- {id}</div>;
+  const content = await getMyContentByID(id);
+  const myContent = content.data;
+
+  return (
+    <div>
+      MyContentPage
+      <p>
+        <span>content ID : --- {id}</span>
+        <br />
+        <span>
+          User ID: {user?.id} / ContentUSERID : {myContent?.userId}
+        </span>
+      </p>
+    </div>
+  );
 }
 
 export default MyContentPage;
