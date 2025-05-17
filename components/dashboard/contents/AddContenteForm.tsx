@@ -33,6 +33,18 @@ import {
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { categoryType, statusType, targetType } from "@/types/contentTypes";
+import { v4 } from "uuid";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { storage } from "@/lib/firebase";
+import { addContent, newContentType } from "@/actions/contentsActions";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { DialogDescription } from "@radix-ui/react-dialog";
 
 type AddNewContentFormValues = {
   title: string;
@@ -51,9 +63,13 @@ type AddNewContentFormValues = {
 };
 
 export default function AddContenteForm() {
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [lastContentId, setLastContentId] = useState<string | null>(null);
+
   const [image, setImage] = useState<File | null>(null);
   const [tags, setTags] = useState<string[]>([]);
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   // Utilisation de react-hook-form pour la gestion du formulaire
   const form = useForm<AddNewContentFormValues>({
@@ -75,60 +91,96 @@ export default function AddContenteForm() {
 
   // Fonction de validation manuelle
   const validateAndSubmit = async () => {
-    const values = form.getValues();
+    setLoading(true);
+    let imgUrl = "";
+    try {
+      const values = form.getValues();
 
-    // Liste des champs requis
-    const requiredFields: {
-      key: keyof AddNewContentFormValues;
-      label: string;
-    }[] = [
-      { key: "title", label: "Titre" },
-      { key: "description", label: "Description" },
-      { key: "category", label: "Catégorie" },
-      { key: "language", label: "Langue" },
-      { key: "target", label: "Public ciblé" },
-      { key: "status", label: "Status" },
-      //   { key: "author", label: "Auteur.e(s)" },
-      //   { key: "artist", label: "Artiste(s)" },
-      //   { key: "edition", label: "Edition (éditeur)" },
-      { key: "publishedAt", label: "Date de publication" },
-    ];
+      // Liste des champs requis
+      const requiredFields: {
+        key: keyof AddNewContentFormValues;
+        label: string;
+      }[] = [
+        { key: "title", label: "Titre" },
+        { key: "description", label: "Description" },
+        { key: "category", label: "Catégorie" },
+        { key: "language", label: "Langue" },
+        { key: "target", label: "Public ciblé" },
+        { key: "status", label: "Status" },
+        //   { key: "author", label: "Auteur.e(s)" },
+        //   { key: "artist", label: "Artiste(s)" },
+        //   { key: "edition", label: "Edition (éditeur)" },
+        { key: "publishedAt", label: "Date de publication" },
+      ];
 
-    for (const field of requiredFields) {
-      const value = values[field.key];
-      if (!value || (typeof value === "string" && value.trim() === "")) {
-        toast.error(`Le champ "${field.label}" est requis.`);
+      for (const field of requiredFields) {
+        const value = values[field.key];
+        if (!value || (typeof value === "string" && value.trim() === "")) {
+          toast.error(`Le champ "${field.label}" est requis.`);
+          return;
+        }
+      }
+
+      if (!image) {
+        toast.error("Ajouter une image avant de soumettre !");
         return;
       }
+
+      if (tags.length < 1) {
+        toast.error("Veuillez sélectionner au moins un tag.");
+        return;
+      }
+
+      //   Add image to firebase
+      const imgId = v4().toString().replace(/-/g, "");
+      const coverRef = ref(storage, `servi-toons/covers/${imgId}`);
+      const coverSnapshot = await uploadBytes(coverRef, image);
+      imgUrl = await getDownloadURL(coverSnapshot.ref);
+
+      if (!imgUrl || imgUrl === "") {
+        toast.error(
+          "Une erreur survenue lors de l'ajout d'image et impossible de continuer!"
+        );
+        return;
+      }
+
+      // On ajoute les tags à values avant soumission
+      values.tags = tags;
+
+      const formData: newContentType = {
+        ...values,
+        publishedAt: new Date(values.publishedAt),
+        category: values.category as categoryType,
+        target: values.target as targetType,
+        status: values.status as statusType,
+        image: imgUrl,
+      };
+
+      const result = await addContent(formData);
+
+      if (result.error) {
+        toast.error(result.message);
+        return;
+      }
+
+      toast.success(result.message);
+
+      // **RESET DES CHAMPS**
+      form.reset(); // Réinitialise tous les champs du formulaire
+      setTags([]); // Vide les tags sélectionnés
+      setImage(null);
+      router.refresh();
+
+      setLastContentId(result.contentId);
+      setTimeout(() => setDialogOpen(true), 1000);
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      toast.error("Oops! Une erreur s'est produite lors de l'ajout!");
+    } finally {
+      setTimeout(() => setLoading(false), 2000);
     }
-
-    if (!image) {
-      toast.error("Ajouter une image avant de soumettre !");
-      return;
-    }
-
-    if (tags.length < 1) {
-      toast.error("Veuillez sélectionner au moins un tag.");
-      return;
-    }
-
-    // On ajoute les tags à values avant soumission
-    values.tags = tags;
-
-    // ... logique d'envoi (tu peux appeler ici ta fonction d'envoi, ex: await sendData(values, image))
-    console.log({ values });
-    toast.success("Formulaire soumis avec succès !");
-    // console.log({ values, image });
   };
-
-  //   const onSubmit = async (values: AddNewContentFormValues) => {
-  //     if (!image) {
-  //       toast.error("Ajouter une image avant de soumettre!");
-  //       return;
-  //     }
-  //     console.log({ values });
-  //     // ... logique d'envoi
-  //   };
 
   return (
     <Form {...form}>
@@ -149,6 +201,7 @@ export default function AddContenteForm() {
                   <Input
                     placeholder="ex: Dragon Ball"
                     maxLength={100}
+                    disabled={loading}
                     {...field}
                   />
                 </FormControl>
@@ -167,6 +220,7 @@ export default function AddContenteForm() {
                   <Textarea
                     placeholder="Décrivez votre contenu ici"
                     rows={5}
+                    disabled={loading}
                     maxLength={600}
                     {...field}
                   />
@@ -186,7 +240,7 @@ export default function AddContenteForm() {
                 <Select
                   value={field.value}
                   onValueChange={field.onChange}
-                  disabled={form.formState.isSubmitting}
+                  disabled={form.formState.isSubmitting || loading}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -255,7 +309,7 @@ export default function AddContenteForm() {
                 <Select
                   value={field.value}
                   onValueChange={field.onChange}
-                  disabled={form.formState.isSubmitting}
+                  disabled={form.formState.isSubmitting || loading}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -288,7 +342,7 @@ export default function AddContenteForm() {
                 <Select
                   value={field.value}
                   onValueChange={field.onChange}
-                  disabled={form.formState.isSubmitting}
+                  disabled={form.formState.isSubmitting || loading}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -320,7 +374,7 @@ export default function AddContenteForm() {
                 <Select
                   value={field.value}
                   onValueChange={field.onChange}
-                  disabled={form.formState.isSubmitting}
+                  disabled={form.formState.isSubmitting || loading}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -353,6 +407,7 @@ export default function AddContenteForm() {
                   <Switch
                     checked={field.value}
                     onCheckedChange={field.onChange}
+                    disabled={loading}
                   />
                 </FormControl>
                 <span className="text-sm text-muted-foreground">
@@ -378,6 +433,7 @@ export default function AddContenteForm() {
                     placeholder="ex: Akira Toriyama"
                     maxLength={100}
                     {...field}
+                    disabled={loading}
                   />
                 </FormControl>
                 <FormMessage />
@@ -395,6 +451,7 @@ export default function AddContenteForm() {
                   <Input
                     placeholder="ex: Akira Toriyama"
                     maxLength={100}
+                    disabled={loading}
                     {...field}
                   />
                 </FormControl>
@@ -413,6 +470,7 @@ export default function AddContenteForm() {
                   <Input
                     placeholder="ex: Shueisha"
                     maxLength={100}
+                    disabled={loading}
                     {...field}
                   />
                 </FormControl>
@@ -428,7 +486,7 @@ export default function AddContenteForm() {
               <FormItem>
                 <FormLabel>Date de publication</FormLabel>
                 <FormControl>
-                  <Input type="date" {...field} />
+                  <Input type="date" {...field} disabled={loading} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -467,6 +525,7 @@ export default function AddContenteForm() {
               }}
               className="w-full md:w-auto"
               required
+              disabled={loading}
             />
             <div className="w-32 h-44 rounded-lg border bg-secondary flex items-center justify-center relative">
               {image ? (
@@ -500,19 +559,90 @@ export default function AddContenteForm() {
             type="button"
             variant="outline"
             onClick={() => router.back()}
-            disabled={form.formState.isSubmitting}
+            disabled={form.formState.isSubmitting || loading}
           >
             Retour
           </Button>
           <Button
             type="button"
             onClick={validateAndSubmit}
-            disabled={form.formState.isSubmitting}
+            disabled={form.formState.isSubmitting || loading}
           >
-            {form.formState.isSubmitting ? "En cours..." : "Ajouter"}
+            {form.formState.isSubmitting || loading ? "En cours..." : "Ajouter"}
           </Button>
         </div>
+
+        {/* dialog */}
+        <ContentAddedDialog
+          open={dialogOpen}
+          contentId={lastContentId}
+          onClose={() => setDialogOpen(false)}
+          onAddAnother={() => {
+            form.reset();
+            setTags([]);
+            setImage(null);
+            setLastContentId(null);
+          }}
+        />
       </div>
     </Form>
   );
 }
+
+type ValidateDialogProps = {
+  open: boolean;
+  contentId: string | null;
+  onClose: () => void;
+  onAddAnother: () => void;
+};
+const ContentAddedDialog = ({
+  open,
+  contentId,
+  onClose,
+  onAddAnother,
+}: ValidateDialogProps) => {
+  const router = useRouter();
+
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="py-12">
+        <DialogHeader>
+          <DialogTitle>Contenu ajouté avec succès !</DialogTitle>
+          <DialogDescription>
+            Que souhaitez-vous faire ensuite ?
+          </DialogDescription>
+        </DialogHeader>
+
+        <DialogFooter className="flex  w-full flex-col-reverse gap-2 flex-wrap">
+          <Button
+            variant="outline"
+            onClick={() => {
+              onClose();
+              router.back();
+            }}
+          >
+            Retour
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              onClose();
+              onAddAnother();
+            }}
+          >
+            Ajouter un autre contenu
+          </Button>
+          <Button
+            onClick={() => {
+              onClose();
+              if (contentId) router.push(`/mes-contenus/${contentId}`);
+            }}
+            disabled={!contentId}
+          >
+            Voir le contenu ajouté
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};

@@ -22,6 +22,28 @@ export function createSlug(str: string): string {
   return slug;
 }
 
+/**
+ * Transforme un titre en slug unique avec 4 chiffres aléatoires à la fin.
+ * @param title Le titre à transformer
+ * @returns Un slug du type "mon-titre-1234"
+ */
+export function generateSlug(title: string): string {
+  // 1. Mise en minuscules, suppression des accents, caractères spéciaux, espaces → tirets
+  const slugBase = title
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // retire les accents
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-") // remplace tout sauf a-z et 0-9 par un tiret
+    .replace(/^-+|-+$/g, "") // retire les tirets en début/fin
+    .replace(/--+/g, "-"); // retire les doubles tirets
+
+  // 2. Génération de 4 chiffres aléatoires
+  const randomDigits = Math.floor(1000 + Math.random() * 9000); // entre 1000 et 9999
+
+  // 3. Retourne le slug final
+  return `${slugBase}-${randomDigits}`;
+}
+
 type ReturnDataValueType = {
   value: string;
   data: { value: string; label: string }[];

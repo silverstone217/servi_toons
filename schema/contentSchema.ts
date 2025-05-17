@@ -2,8 +2,8 @@ import { z } from "zod";
 
 export const addContentSchema = z.object({
   title: z.string().min(1).max(100),
-  description: z.string().min(10).max(500),
-  tags: z.array(z.string().min(1)).max(5),
+  description: z.string().min(10).max(600),
+  tags: z.array(z.string().min(1)).max(5).min(1),
   language: z.string().min(2).max(30),
   target: z.enum(["seinen", "shonen", "shojo", "josei", "kodomo"]),
 
@@ -11,6 +11,11 @@ export const addContentSchema = z.object({
   publishedAt: z.date(),
   isColored: z.boolean(),
   status: z.enum(["on_going", "finished", "hiatus"]),
+
+  author: z.string().max(100).optional(),
+  artist: z.string().max(100).optional(),
+  edition: z.string().max(100).optional(),
+  image: z.string().url(),
 });
 
 export const addContentSecondSchema = z.object({
