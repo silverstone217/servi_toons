@@ -1,5 +1,10 @@
 import { getUser } from "@/actions/authAction";
-import { getMyContentByID } from "@/actions/contentsActions";
+import {
+  getMyChpatersContentByID,
+  getMyContentByID,
+} from "@/actions/contentsActions";
+import ChaptersSection from "@/components/dashboard/contents/content/ChaptersSection";
+import DangerZone from "@/components/dashboard/contents/content/DangerZone";
 import ModifyEditorialInfo from "@/components/dashboard/contents/content/ModifyEditorialInfo";
 import ModifyImage from "@/components/dashboard/contents/content/ModifyImage";
 import ModifyImportanteInfo from "@/components/dashboard/contents/content/ModifyImportanteInfo";
@@ -31,6 +36,8 @@ async function MyContentPage({ params }: Props) {
     return <NotPermitted />;
   }
 
+  const chapters = (await getMyChpatersContentByID(myContent.id)).data;
+
   return (
     <div>
       <div className="flex flex-col gap-6">
@@ -48,6 +55,12 @@ async function MyContentPage({ params }: Props) {
 
         {/* EDITION info */}
         <ModifyEditorialInfo content={myContent} />
+
+        {/* Chapters */}
+        <ChaptersSection content={myContent} chapters={chapters} />
+
+        {/* Danger zone */}
+        <DangerZone content={myContent} />
       </div>
     </div>
   );

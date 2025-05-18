@@ -476,3 +476,37 @@ export const getMyContentByID = async (id: string) => {
     data: content,
   };
 };
+
+// GET MY Chapters for CONTENT BY ID
+export const getMyChpatersContentByID = async (id: string) => {
+  const user = await getUser();
+  if (!user) {
+    return {
+      error: true,
+      message: "Veuillez vous connecter pour continuer.",
+      data: [],
+    };
+  }
+
+  const chapters = await prisma.chapter.findMany({
+    where: {
+      content: {
+        id: id,
+        userId: user.id,
+      },
+    },
+  });
+
+  if (!chapters) {
+    return {
+      error: true,
+      message: "Ce comptenu n'existe pas ou a été supprimé!",
+      data: [],
+    };
+  }
+  return {
+    error: false,
+    message: "Contenu trouvé",
+    data: chapters ?? [],
+  };
+};
