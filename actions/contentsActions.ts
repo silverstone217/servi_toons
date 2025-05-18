@@ -517,7 +517,11 @@ export const getMyChpatersContentByID = async (id: string) => {
 // GET ALL CONTENTS
 
 export const getContents = async () => {
-  const content = await prisma.content.findMany();
+  const content = await prisma.content.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
 
   return content ?? [];
 };

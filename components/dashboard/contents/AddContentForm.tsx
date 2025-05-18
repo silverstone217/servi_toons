@@ -67,7 +67,7 @@ type AddNewContentFormValues = {
   // image: File | null; // l'image est gérée à part dans ton state, pas dans values
 };
 
-export default function AddContenteForm() {
+export default function AddContentForm() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [lastContentId, setLastContentId] = useState<string | null>(null);
 

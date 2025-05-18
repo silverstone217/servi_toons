@@ -1,4 +1,4 @@
-import AddContenteForm from "@/components/dashboard/contents/AddContenteForm";
+import AddContentForm from "@/components/dashboard/contents/AddContentForm";
 import React from "react";
 
 function AddContentPage() {
@@ -14,7 +14,7 @@ function AddContentPage() {
 
       {/* form */}
 
-      <AddContenteForm />
+      <AddContentForm />
     </div>
   );
 }
