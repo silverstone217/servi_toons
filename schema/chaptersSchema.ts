@@ -13,3 +13,11 @@ export const modChapterSchema = z.object({
   chapterId: z.string(),
   contentId: z.string(),
 });
+
+// PAGES
+export const addNewPageSChema = z.object({
+  order: z.number().min(1).max(10000),
+  chapterId: z.string(),
+  contentId: z.string(),
+  imgUrl: z.string().url(),
+});

@@ -9,7 +9,7 @@ interface Props {
   chapters: Chapter[];
 }
 
-const ChaptersSection = ({ chapters }: Props) => {
+const ChaptersSection = ({ content, chapters }: Props) => {
   return (
     <div>
       <div className="bg-background border rounded-xl shadow-sm p-6 space-y-5">
@@ -18,7 +18,7 @@ const ChaptersSection = ({ chapters }: Props) => {
         </h2>
 
         {/* Voire les chapitres */}
-        <Link href={"#"}>
+        <Link href={`/mes-contenus/${content.id}/chapitres`}>
           <Button>
             <span>Voire les chapitres</span>
           </Button>

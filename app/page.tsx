@@ -1,9 +1,11 @@
+import { getContents } from "@/actions/contentsActions";
 import Header from "@/components/home/Header";
 import LatestReleases from "@/components/home/LatestReleases";
 import NewContents from "@/components/home/NewContents";
 import PopularTopContent from "@/components/home/PopularTopContent";
 
-export default function Home() {
+export default async function Home() {
+  const contents = await getContents();
   return (
     <div className="">
       {/* header */}
@@ -13,13 +15,13 @@ export default function Home() {
        pb-6 transition-all duration-500 ease-in-out"
       >
         {/* popular */}
-        <PopularTopContent />
+        <PopularTopContent contents={contents} />
 
         {/* Latest release */}
         <LatestReleases />
 
         {/* new content */}
-        <NewContents />
+        <NewContents contents={contents} />
 
         {/* footer */}
       </main>

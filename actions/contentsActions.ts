@@ -495,6 +495,9 @@ export const getMyChpatersContentByID = async (id: string) => {
         userId: user.id,
       },
     },
+    orderBy: {
+      order: "asc",
+    },
   });
 
   if (!chapters) {
@@ -509,4 +512,12 @@ export const getMyChpatersContentByID = async (id: string) => {
     message: "Contenu trouvé",
     data: chapters ?? [],
   };
+};
+
+// GET ALL CONTENTS
+
+export const getContents = async () => {
+  const content = await prisma.content.findMany();
+
+  return content ?? [];
 };

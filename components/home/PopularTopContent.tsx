@@ -1,30 +1,35 @@
 "use client";
 import { cn } from "@/lib/utils";
-import { ContentsData } from "@/utils/contentData";
+// import { ContentsData } from "@/utils/contentData";
 import { CategoriesData, LanguagesData, TagsData } from "@/utils/data";
 import { capitalizeFirstLetter, returnDataValue } from "@/utils/functions";
+import { Content } from "@prisma/client";
 // import { ArrowBigRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
-const PopularTopContent = () => {
+type Props = {
+  contents: Content[];
+};
+
+const PopularTopContent = ({ contents }: Props) => {
   const [index, setIndex] = useState(0);
 
   const handleNext = useCallback(() => {
     setIndex((prevIndex) =>
-      prevIndex === ContentsData.length - 1 ? 0 : prevIndex + 1
+      prevIndex === contents.length - 1 ? 0 : prevIndex + 1
     );
-  }, []);
+  }, [contents.length]);
 
   useEffect(() => {
     const interval = setInterval(() => handleNext(), 5000);
     return () => clearInterval(interval);
   }, [handleNext]);
 
-  const content = useMemo(() => ContentsData[index], [index]);
+  const content = useMemo(() => contents[index], [contents, index]);
 
-  if (ContentsData.length < 1) {
+  if (contents.length < 1) {
     return null;
   }
 
@@ -127,14 +132,15 @@ const PopularTopContent = () => {
 
               {/*author and Edition  */}
               <p className="text-sm font-medium capitalize">
-                <span>Jean Paul</span>, <span>Minesco edt</span>
+                {content.author && <span>{content.author}, </span>}
+                <span>{content.publishedAt.getFullYear()}</span>
               </p>
             </div>
           </Link>
 
           {/* dot btn nav */}
           <div className="w-full flex items-center justify-center gap-1.5 mt-auto">
-            {ContentsData.map((_, idx) => (
+            {contents.map((_, idx) => (
               <span
                 key={idx}
                 role="button"

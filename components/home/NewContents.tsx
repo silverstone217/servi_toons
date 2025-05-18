@@ -1,10 +1,15 @@
 "use client";
-import { ContentsData } from "@/utils/contentData";
+// import { ContentsData } from "@/utils/contentData";
+import { Content } from "@prisma/client";
 import { ArrowBigRight } from "lucide-react";
-import Image, { StaticImageData } from "next/image";
+import Image from "next/image";
 import React, { Suspense } from "react";
 
-const NewContents = () => {
+type Props = {
+  contents: Content[];
+};
+
+const NewContents = ({ contents }: Props) => {
   return (
     <div
       className="w-full flex flex-col gap-6 pt-8 md:pt-12 px-4 bg-gray-100 dark:bg-gray-900
@@ -26,13 +31,13 @@ const NewContents = () => {
         xl:grid grid-cols-8 scrollbar-horizontal 
         "
         >
-          {ContentsData.map((content, idx) => (
+          {contents.map((content, idx) => (
             <div key={idx} className="shrink-0">
               <CardContent content={content} />
             </div>
           ))}
 
-          {ContentsData.slice(0, 3).map((content, idx) => (
+          {contents.slice(0, 3).map((content, idx) => (
             <div key={idx} className="shrink-0">
               <CardContent content={content} />
             </div>
@@ -45,19 +50,19 @@ const NewContents = () => {
 
 export default NewContents;
 
-type CardProps = {
-  title: string;
-  slug: string;
-  image: StaticImageData;
-  description: string;
-  category: string;
-  tags: string[];
-  target: string;
-  authorId: string;
-  language: string;
-};
+// type CardProps = {
+//   title: string;
+//   slug: string;
+//   image: StaticImageData;
+//   description: string;
+//   category: string;
+//   tags: string[];
+//   target: string;
+//   authorId: string;
+//   language: string;
+// };
 
-export const CardContent = ({ content }: { content: CardProps }) => {
+export const CardContent = ({ content }: { content: Content }) => {
   return (
     <div className="xl:w-full w-36 flex flex-col gap-4 group transition-all duration-500 ease-in-out">
       {/* image */}

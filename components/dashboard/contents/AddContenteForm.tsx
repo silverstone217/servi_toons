@@ -34,7 +34,12 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { categoryType, statusType, targetType } from "@/types/contentTypes";
 import { v4 } from "uuid";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import {
+  deleteObject,
+  getDownloadURL,
+  ref,
+  uploadBytes,
+} from "firebase/storage";
 import { storage } from "@/lib/firebase";
 import { addContent, newContentType } from "@/actions/contentsActions";
 import {
@@ -159,6 +164,10 @@ export default function AddContenteForm() {
       const result = await addContent(formData);
 
       if (result.error) {
+        if (imgUrl) {
+          await deleteObject(ref(storage, imgUrl));
+        }
+
         toast.error(result.message);
         return;
       }
@@ -177,6 +186,9 @@ export default function AddContenteForm() {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error("Oops! Une erreur s'est produite lors de l'ajout!");
+      if (imgUrl) {
+        await deleteObject(ref(storage, imgUrl));
+      }
     } finally {
       setTimeout(() => setLoading(false), 2000);
     }
