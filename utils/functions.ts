@@ -79,3 +79,14 @@ export function areArraysEqual(arr1: any[], arr2: any[]): boolean {
   const sortedArr2 = arr2.slice().sort();
   return sortedArr1.every((element, index) => element === sortedArr2[index]);
 }
+
+// Convert Date TO string DD/MM/YYYY
+
+// Convertit une date en string au format DD/MM/YYYY
+export function convertDateToString(date: Date): string {
+  const stringDate = `${date.getFullYear()}-${String(
+    date.getMonth() + 1
+  ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+
+  return stringDate;
+}

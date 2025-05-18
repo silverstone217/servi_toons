@@ -1,5 +1,12 @@
 import { getUser } from "@/actions/authAction";
 import { getMyContentByID } from "@/actions/contentsActions";
+import ModifyEditorialInfo from "@/components/dashboard/contents/content/ModifyEditorialInfo";
+import ModifyImage from "@/components/dashboard/contents/content/ModifyImage";
+import ModifyImportanteInfo from "@/components/dashboard/contents/content/ModifyImportanteInfo";
+import ModifySpecificInformations from "@/components/dashboard/contents/content/ModifySpecificInformations";
+import PublishContent from "@/components/dashboard/contents/content/PublishContent";
+import { NotPermitted } from "@/components/NotAuthorized";
+import { Content } from "@prisma/client";
 import { redirect } from "next/navigation";
 import React from "react";
 
@@ -18,18 +25,30 @@ async function MyContentPage({ params }: Props) {
   }
 
   const content = await getMyContentByID(id);
-  const myContent = content.data;
+  const myContent = content.data as Content;
+
+  if (myContent.userId !== user.id) {
+    return <NotPermitted />;
+  }
 
   return (
     <div>
-      MyContentPage
-      <p>
-        <span>content ID :{id}</span>
-        <br />
-        <span>
-          User ID: {user.id} / ContentUSERID : {myContent?.userId}
-        </span>
-      </p>
+      <div className="flex flex-col gap-6">
+        {/* Publish Yes or Not */}
+        <PublishContent content={myContent} />
+
+        {/* image */}
+        <ModifyImage content={myContent} />
+
+        {/* Title and Impoprt INfo */}
+        <ModifyImportanteInfo content={myContent} />
+
+        {/*  Special INfo */}
+        <ModifySpecificInformations content={myContent} />
+
+        {/* EDITION info */}
+        <ModifyEditorialInfo content={myContent} />
+      </div>
     </div>
   );
 }

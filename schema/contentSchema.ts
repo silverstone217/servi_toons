@@ -24,20 +24,27 @@ export const addContentSecondSchema = z.object({
   contentId: z.string(),
 });
 
-export const modifyContentFPSchema = z.object({
+export const modifyContentFirstPartSchema = z.object({
   title: z.string().min(1).max(100),
   description: z.string().min(10).max(500),
-  target: z.enum(["seinen", "shonen", "shojo", "josei", "kodomo"]),
   contentId: z.string(),
   category: z.enum(["manga", "manhwa", "manhua", "comics", "light_novel"]),
-  status: z.enum(["on_going", "finished", "hiatus"]),
 });
 
-export const modifyContentSISchema = z.object({
-  tags: z.array(z.string().min(1)).max(5),
-  publishedAt: z.date(),
-  language: z.string().min(2).max(30),
+export const modifyContentSecondPartSchema = z.object({
   isColored: z.boolean(),
+  status: z.enum(["on_going", "finished", "hiatus"]),
+  contentId: z.string(),
+  tags: z.array(z.string().min(1)).max(5).min(1),
+  target: z.enum(["seinen", "shonen", "shojo", "josei", "kodomo"]),
+  language: z.string().min(2).max(30),
+});
+
+export const modifyContentThirdPartSchema = z.object({
+  publishedAt: z.date(),
+  author: z.string().max(100).optional(),
+  artist: z.string().max(100).optional(),
+  edition: z.string().max(100).optional(),
 
   contentId: z.string(),
 });

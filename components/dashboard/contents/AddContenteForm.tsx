@@ -222,6 +222,7 @@ export default function AddContenteForm() {
                     rows={5}
                     disabled={loading}
                     maxLength={600}
+                    className="text-sm"
                     {...field}
                   />
                 </FormControl>
@@ -533,8 +534,10 @@ export default function AddContenteForm() {
                   <Image
                     src={URL.createObjectURL(image)}
                     alt="upload image"
-                    fill
-                    className="object-cover rounded-lg"
+                    width={800}
+                    height={1000}
+                    className="object-cover rounded-lg h-full w-full"
+                    priority
                   />
                   <Button
                     variant="destructive"

@@ -1,5 +1,10 @@
 "use server";
-import { addContentSchema } from "@/schema/contentSchema";
+import {
+  addContentSchema,
+  modifyContentFirstPartSchema,
+  modifyContentSecondPartSchema,
+  modifyContentThirdPartSchema,
+} from "@/schema/contentSchema";
 import { z } from "zod";
 import { getUser } from "./authAction";
 import { generateSlug } from "@/utils/functions";
@@ -59,9 +64,15 @@ export const addContent = async (newContent: newContentType) => {
 
   // Préparation des données optionnelles
   const optionalFields = {
-    ...(validated.artist ? { artist: validated.artist } : {}),
-    ...(validated.author ? { author: validated.author } : {}),
-    ...(validated.edition ? { edition: validated.edition } : {}),
+    ...(validated.artist
+      ? { artist: validated.artist.toLocaleLowerCase().trim() }
+      : {}),
+    ...(validated.author
+      ? { author: validated.author.toLocaleLowerCase().trim() }
+      : {}),
+    ...(validated.edition
+      ? { edition: validated.edition.toLocaleLowerCase().trim() }
+      : {}),
   };
 
   // Vérifier le type de publishedAt (Date ou string)
@@ -103,6 +114,305 @@ export const addContent = async (newContent: newContentType) => {
     error: false,
     message: "Contenu ajouté avec succès!",
     contentId: addContent.id,
+  };
+};
+
+// MODIFY CONTENT
+// 1. Modify title, desc, category
+export type modifyFirstPartType = z.infer<typeof modifyContentFirstPartSchema>;
+
+export const modifyFirstPart = async (content: modifyFirstPartType) => {
+  const user = await getUser();
+  if (!user) {
+    return {
+      error: true,
+      message: "Veuillez vous connecter pour modifier un contenu.",
+      data: null,
+    };
+  }
+
+  const validationResult = modifyContentFirstPartSchema.safeParse(content);
+
+  if (!validationResult.success) {
+    console.log(validationResult.error.issues, "erreurs survenues");
+    return {
+      error: true,
+      message: "Erreur de validation",
+      errors: validationResult.error.issues,
+    };
+  }
+
+  const validated = validationResult.data;
+
+  // Vérification de l'existence du contenu avec findFirst
+  const isMyContentExist = await prisma.content.findFirst({
+    where: {
+      userId: user.id,
+      id: validated.contentId,
+    },
+  });
+
+  if (!isMyContentExist) {
+    return {
+      error: true,
+      message: "Ce contenu n'existe plus ou vous n'êtes pas l'auteur !",
+      data: null,
+    };
+  }
+
+  const baseTitle = validated.title.toLowerCase().trim();
+  const isTitleHasChanged =
+    isMyContentExist.title.trim().toLowerCase() !== baseTitle;
+
+  let slug = isMyContentExist.slug;
+
+  if (isTitleHasChanged) {
+    let attempts = 0;
+    const maxAttempts = 10;
+    let isSlugUnique = false;
+
+    do {
+      slug = generateSlug(baseTitle);
+      const existingContent = await prisma.content.findUnique({
+        where: { slug },
+      });
+      isSlugUnique = !existingContent;
+      attempts++;
+    } while (!isSlugUnique && attempts < maxAttempts);
+
+    if (!isSlugUnique) {
+      return {
+        error: true,
+        message:
+          "Impossible de générer un slug unique après plusieurs tentatives.",
+        data: null,
+      };
+    }
+  }
+
+  const modifyContent = await prisma.content.update({
+    where: { id: validated.contentId },
+    data: {
+      title: validated.title,
+      description: validated.description,
+      category: validated.category,
+      slug: isTitleHasChanged ? slug : isMyContentExist.slug,
+    },
+  });
+
+  if (!modifyContent) {
+    return {
+      error: true,
+      message:
+        "Impossible d'effectuer cette action, veuillez réessayer plus tard !",
+      data: null,
+    };
+  }
+
+  return {
+    error: false,
+    message: "Modifié avec succès",
+    data: modifyContent,
+  };
+};
+
+// 2. Modify tags, lang, status, isColored
+export type modifySecondPartType = z.infer<
+  typeof modifyContentSecondPartSchema
+>;
+export const modifySecondPart = async (content: modifySecondPartType) => {
+  const user = await getUser();
+  if (!user) {
+    return {
+      error: true,
+      message: "Veuillez vous connecter pour modifier un contenu.",
+      data: null,
+    };
+  }
+
+  const validationResult = modifyContentSecondPartSchema.safeParse(content);
+
+  if (!validationResult.success) {
+    console.log(validationResult.error.issues, "erreurs survenues");
+    return {
+      error: true,
+      message: "Erreur de validation",
+      errors: validationResult.error.issues,
+    };
+  }
+
+  const validated = validationResult.data;
+
+  // Vérification de l'existence du contenu avec findFirst
+  const isMyContentExist = await prisma.content.findFirst({
+    where: {
+      userId: user.id,
+      id: validated.contentId,
+    },
+  });
+
+  if (!isMyContentExist) {
+    return {
+      error: true,
+      message: "Ce contenu n'existe plus ou vous n'êtes pas l'auteur !",
+      data: null,
+    };
+  }
+
+  const modifyContent = await prisma.content.update({
+    where: { id: validated.contentId },
+    data: {
+      isColored: validated.isColored,
+      target: validated.target,
+      language: validated.language,
+      tags: validated.tags,
+    },
+  });
+
+  if (!modifyContent) {
+    return {
+      error: true,
+      message:
+        "Impossible d'effectuer cette action, veuillez réessayer plus tard !",
+      data: null,
+    };
+  }
+
+  return {
+    error: false,
+    message: "Modifié avec succès",
+    data: modifyContent,
+  };
+};
+
+// 3. Modify Edition, Author, Artist, Published date
+export type modifyThirdPartType = z.infer<typeof modifyContentThirdPartSchema>;
+export const modifyThirdPart = async (content: modifyThirdPartType) => {
+  const user = await getUser();
+  if (!user) {
+    return {
+      error: true,
+      message: "Veuillez vous connecter pour modifier un contenu.",
+      data: null,
+    };
+  }
+
+  const validationResult = modifyContentThirdPartSchema.safeParse(content);
+
+  if (!validationResult.success) {
+    console.log(validationResult.error.issues, "erreurs survenues");
+    return {
+      error: true,
+      message: "Erreur de validation",
+      errors: validationResult.error.issues,
+    };
+  }
+
+  const validated = validationResult.data;
+
+  // Vérification de l'existence du contenu avec findFirst
+  const isMyContentExist = await prisma.content.findFirst({
+    where: {
+      userId: user.id,
+      id: validated.contentId,
+    },
+  });
+
+  if (!isMyContentExist) {
+    return {
+      error: true,
+      message: "Ce contenu n'existe plus ou vous n'êtes pas l'auteur !",
+      data: null,
+    };
+  }
+
+  const publishedAt =
+    validated.publishedAt instanceof Date
+      ? validated.publishedAt
+      : new Date(validated.publishedAt);
+
+  // Préparation des données optionnelles
+  const optionalFields = {
+    ...(validated.artist
+      ? { artist: validated.artist.toLocaleLowerCase().trim() }
+      : {}),
+    ...(validated.author
+      ? { author: validated.author.toLocaleLowerCase().trim() }
+      : {}),
+    ...(validated.edition
+      ? { edition: validated.edition.toLocaleLowerCase().trim() }
+      : {}),
+  };
+
+  const modifyContent = await prisma.content.update({
+    where: { id: validated.contentId },
+    data: {
+      ...optionalFields,
+      publishedAt,
+    },
+  });
+
+  if (!modifyContent) {
+    return {
+      error: true,
+      message:
+        "Impossible d'effectuer cette action, veuillez réessayer plus tard !",
+      data: null,
+    };
+  }
+
+  return {
+    error: false,
+    message: "Modifié avec succès",
+    data: modifyContent,
+  };
+};
+
+// 4. Publish or Not content
+export const PublishedMyContent = async (contentId: string) => {
+  const user = await getUser();
+  if (!user) {
+    return {
+      error: true,
+      message: "Veuillez vous connecter pour modifier un contenu.",
+      data: null,
+    };
+  }
+
+  const isMyContentExist = await prisma.content.findUnique({
+    where: { id: contentId, userId: user.id },
+  });
+
+  if (!isMyContentExist) {
+    return {
+      error: true,
+      message: "Ce contenu n'existe plus ou vous n'êtes pas l'auteur !",
+      data: null,
+    };
+  }
+
+  const isPublished = isMyContentExist.isPublished ? false : true;
+
+  const updateContent = await prisma.content.update({
+    where: { id: contentId },
+    data: {
+      isPublished: isPublished,
+    },
+  });
+
+  if (!updateContent) {
+    return {
+      error: true,
+      message:
+        "Impossible d'effectuer cette action, veuillez réessayer plus tard !",
+      data: null,
+    };
+  }
+
+  return {
+    error: false,
+    message: isPublished ? "Publié avec succès" : "Retiré de contenus publiés",
+    data: updateContent,
   };
 };
 
