@@ -1,14 +1,15 @@
 "use client";
+
+import React, { useMemo, useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { categoryType } from "@/types/contentTypes";
+import { Search } from "lucide-react";
+import { Content } from "@prisma/client";
 import { CategoriesData, LanguagesData } from "@/utils/data";
 import { returnDataValue } from "@/utils/functions";
-import { Content } from "@prisma/client";
-import { Search } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import React, { useMemo, useState } from "react";
+import { categoryType } from "@/types/contentTypes";
 
 type Props = {
   contents: Content[];
@@ -18,88 +19,82 @@ const MainMyContentComponent = ({ contents }: Props) => {
   const [searchText, setSearchText] = useState("");
   const [category, setCategory] = useState<categoryType | "all">("all");
 
-  const filteredContents = useMemo(
-    () =>
-      contents
-        .filter(
-          (con) =>
-            con.title.includes(searchText.trim().toLocaleLowerCase()) ||
-            (con.author &&
-              con.author.includes(searchText.trim().toLocaleLowerCase())) ||
-            (con.artist &&
-              con.artist.includes(searchText.trim().toLocaleLowerCase())) ||
-            (con.edition &&
-              con.edition.includes(searchText.trim().toLocaleLowerCase()))
-        )
-        .filter((con) =>
-          category === "all" ? true : con.category === category
-        ),
-    [contents, searchText, category]
-  );
+  const filteredContents = useMemo(() => {
+    const lowerSearch = searchText.trim().toLowerCase();
+    return contents
+      .filter((con) => {
+        const fields = [con.title, con.author, con.artist, con.edition].filter(
+          Boolean
+        );
+        return (
+          lowerSearch === "" ||
+          fields.some((field) => field!.toLowerCase().includes(lowerSearch))
+        );
+      })
+      .filter((con) => (category === "all" ? true : con.category === category));
+  }, [contents, searchText, category]);
 
   return (
-    <div className="w-full flex flex-col gap-6 transition-all duration-500 ease-in-out">
-      {/* filter top */}
-      <div className="w-full flex flex-col gap-2">
-        {/* search */}
-        <div className="relative w-full flex items-center">
+    <div className="w-full flex flex-col gap-8 transition-all duration-500 ease-in-out">
+      {/* Filter section */}
+      <div className="flex flex-col gap-4">
+        {/* Search input */}
+        <div className="relative max-w-md w-full">
           <Search
-            className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground size-5
-          "
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            size={20}
           />
           <Input
+            type="search"
+            placeholder="Chercher par titre ou nom de l'auteur..."
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
-            className="flex-1 pl-10 text-sm"
-            placeholder="Chercher par titre ou nom de l'auteur..."
-            type="search"
+            className="pl-10"
+            aria-label="Recherche contenus"
           />
         </div>
-        {/* Category */}
-        <div
-          className="w-full flex flex-row p-2 pb-4  border-b-2 gap-2 
-        transition-all duration-500 ease-in-out
-         overflow-x-auto"
-        >
-          {/* all */}
+
+        {/* Category filter */}
+        <div className="flex flex-wrap gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600">
           <Button
             variant={category === "all" ? "default" : "outline"}
             onClick={() => setCategory("all")}
+            size="sm"
           >
-            <span>Tout</span>
+            Tout
           </Button>
-
-          {/* others */}
-          {CategoriesData.map((cat, idx) => (
+          {CategoriesData.map((cat) => (
             <Button
+              key={cat.value}
               variant={category === cat.value ? "default" : "outline"}
-              key={idx}
               onClick={() => setCategory(cat.value as categoryType)}
+              size="sm"
             >
-              <span>{cat.label}</span>
+              {cat.label}
             </Button>
           ))}
         </div>
       </div>
 
-      {/* contents */}
-
-      <div className="space-y-4 transition-all duration-500 ease-in-out">
-        <h2 className="text-xl font-medium">
+      {/* Content grid */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
           Mes contenus ({filteredContents.length.toString().padStart(2, "0")})
         </h2>
-        <div
-          className="w-full grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-6
-      2xl:grid-cols-8 gap-4 gap-y-6 transition-all duration-500 ease-in-out
-      "
-        >
-          {filteredContents.map((content, idx) => (
-            <Link href={`/mes-contenus/${content.id}`} key={idx}>
+
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-5">
+          {filteredContents.map((content) => (
+            <Link
+              href={`/mes-contenus/${content.id}`}
+              key={content.id}
+              className="group"
+              aria-label={`Voir le contenu ${content.title}`}
+            >
               <CardContent content={content} />
             </Link>
           ))}
         </div>
-      </div>
+      </section>
     </div>
   );
 };
@@ -108,30 +103,25 @@ export default MainMyContentComponent;
 
 export const CardContent = ({ content }: { content: Content }) => {
   return (
-    <div className="w-full  flex flex-col gap-4 group transition-all duration-500 ease-in-out">
-      {/* image */}
-      <div className="w-full h-52 flex overflow-hidden rounded-lg relatif">
+    <article
+      className="flex flex-col gap-3 rounded-lg overflow-hidden bg-white 
+    dark:bg-gray-800 shadow-sm hover:shadow-md transition-shadow duration-300 h-full"
+    >
+      <div className="relative w-full h-52 overflow-hidden rounded-t-lg">
         <Image
           src={content.image}
-          priority
           alt={content.title}
-          width={800}
-          height={850}
-          className="w-full h-full object-cover rounded-lg group-hover:scale-125 cursor-pointer
-                    transition-all duration-500 ease-in-out
-                    "
+          fill
+          className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-110"
+          priority
         />
       </div>
 
-      {/* title */}
-      <div className="flex flex-col items-start">
-        <h4
-          className="capitalize text-sm line-clamp-2 cursor-pointer
-                    transition-all duration-500 ease-in-out font-medium"
-        >
+      <div className="px-3 pb-3 flex flex-col flex-1">
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 line-clamp-2 capitalize mb-1">
           {content.title}
-        </h4>
-        <div className="flex items-center gap-2 justify-between text-[10px] opacity-75">
+        </h3>
+        <div className="flex justify-between text-xs font-medium text-gray-600 dark:text-gray-400">
           <span>
             {returnDataValue({ value: content.category, data: CategoriesData })}
           </span>
@@ -140,6 +130,6 @@ export const CardContent = ({ content }: { content: Content }) => {
           </span>
         </div>
       </div>
-    </div>
+    </article>
   );
 };

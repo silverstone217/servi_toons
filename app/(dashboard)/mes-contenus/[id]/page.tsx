@@ -41,6 +41,8 @@ async function MyContentPage({ params }: Props) {
   return (
     <div>
       <div className="flex flex-col gap-6">
+        {/* Chapters */}
+        <ChaptersSection content={myContent} chapters={chapters} />
         {/* Publish Yes or Not */}
         <PublishContent content={myContent} />
 
@@ -55,9 +57,6 @@ async function MyContentPage({ params }: Props) {
 
         {/* EDITION info */}
         <ModifyEditorialInfo content={myContent} />
-
-        {/* Chapters */}
-        <ChaptersSection content={myContent} chapters={chapters} />
 
         {/* Danger zone */}
         <DangerZone content={myContent} />

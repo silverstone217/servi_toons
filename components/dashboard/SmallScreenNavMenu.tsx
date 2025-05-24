@@ -1,4 +1,5 @@
 "use client";
+
 import React from "react";
 import SheetComponent from "../SheetComponent";
 import { AlignJustify } from "lucide-react";
@@ -16,82 +17,83 @@ import { usePathname } from "next/navigation";
 
 const SmallScreenNavMenu = () => {
   const user = useCurrentUser();
-  const pathanme = usePathname();
+  const pathname = usePathname();
 
   const handleLogOut = async () => {
     try {
       await signOut();
-      toast.success("Vous avez été deconnecté!");
-
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
-      toast.error("Oops! Une erreur est survenue!");
+      toast.success("Vous avez été déconnecté !");
+    } catch {
+      toast.error("Oops! Une erreur est survenue !");
     }
   };
 
   return (
     <SheetComponent
-      title="Servi Toons"
-      description="Publier et gerer vos mangas, LN, manhwa ou vos illutrations facilement."
       side="left"
+      title="Servi Toons"
+      description="Publiez et gérez vos mangas, LN, manhwa ou illustrations facilement."
       trigger={
-        <Button variant={"ghost"} size={"icon"}>
-          <AlignJustify className="size-6" />
+        <Button variant="ghost" size="icon" aria-label="Ouvrir le menu">
+          <AlignJustify className="w-6 h-6 text-gray-700 dark:text-gray-300" />
         </Button>
       }
       content={
-        <div className="flex flex-col p-4 flex-1 border-t gap-4 transition-all duration-500 ease-in-out">
-          {/* links */}
-          <nav className="flex flex-col gap-4 flex-1 pb-4 border-b">
-            {DashboardPages.map((lk, i) => (
-              <SheetClose asChild key={i}>
-                <Link href={lk.href}>
-                  <div
-                    className={cn(
-                      "font-medium p-2",
-                      "transition-all ease-in-out duration-500 shrink-0",
-                      "flex items-center w-full gap-4 rounded-lg",
-                      pathanme.includes(lk.href) && lk.href.length > 1
-                        ? "bg-primary"
-                        : "",
-                      "hover:bg-primary hover:opacity-75 transition-all duration-500 ease-in-out"
-                    )}
-                  >
-                    <lk.icon className="shrink-0 size-6" />
-                    <span>{lk.label}</span>
-                  </div>
-                </Link>
-              </SheetClose>
-            ))}
+        <div className="flex flex-col h-full p-6 gap-6">
+          {/* Navigation Links */}
+          <nav className="flex flex-col gap-4 border-b border-gray-200 dark:border-gray-700 pb-6 overflow-y-auto max-h-[60vh]">
+            {DashboardPages.map((link, idx) => {
+              const isActive =
+                pathname?.startsWith(link.href) && link.href.length > 1;
+              return (
+                <SheetClose asChild key={idx}>
+                  <Link href={link.href}>
+                    <div
+                      className={cn(
+                        "flex items-center gap-4 p-3 rounded-lg font-medium transition-colors",
+                        isActive
+                          ? "bg-primary text-white"
+                          : "text-gray-800 dark:text-gray-200 hover:bg-primary hover:bg-opacity-20 dark:hover:bg-primary dark:hover:bg-opacity-30"
+                      )}
+                    >
+                      <link.icon className="w-6 h-6 flex-shrink-0" />
+                      <span>{link.label}</span>
+                    </div>
+                  </Link>
+                </SheetClose>
+              );
+            })}
           </nav>
 
-          {/* others btn and login */}
-          <div className="w-full flex flex-row-reverse items-center gap-4 flex-wrap">
-            {/* logout */}
+          {/* Bottom actions: Logout / Login / Profile & Theme */}
+          <div className="flex items-center justify-between flex-wrap gap-4">
             {user && (
-              <Button variant={"destructive"} onClick={handleLogOut}>
-                <span>Deconnexion</span>
+              <Button
+                variant="destructive"
+                onClick={handleLogOut}
+                className="flex-1 min-w-[120px]"
+              >
+                Déconnexion
               </Button>
             )}
 
             {!user ? (
               <SheetClose asChild>
-                <Link href={"/connexion"}>
-                  <Button>
-                    <span>Connexion</span>
-                  </Button>
+                <Link href="/connexion" className="flex-1 min-w-[120px]">
+                  <Button className="w-full">Connexion</Button>
                 </Link>
               </SheetClose>
             ) : (
               <SheetClose asChild>
-                <Link href={"/profil"}>
+                <Link href="/profil" aria-label="Profil utilisateur">
                   <AvatarUser />
                 </Link>
               </SheetClose>
             )}
 
-            {/* Theme */}
-            <SwitchThemSmallScreen />
+            <div className="ml-auto">
+              <SwitchThemSmallScreen />
+            </div>
           </div>
         </div>
       }

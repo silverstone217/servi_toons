@@ -2,49 +2,31 @@ import { getUser } from "@/actions/authAction";
 import Form from "@/components/auth/Form";
 import SignInImages from "@/components/auth/SignInImages";
 import { redirect } from "next/navigation";
-import React from "react";
 
 const SignInPage = async () => {
   const user = await getUser();
 
   if (user) {
-    return redirect("/");
+    redirect("/");
   }
 
   return (
-    <div
-      className="md:grid flex flex-col w-full h-dvh lg:overflow-hidden 
-     px-6 lg:px-10 py-4 md:py-6 gap-12
-    grid-cols-2 
-    "
-    >
-      {/* form */}
-      <div className="w-full md:h-full md:flex hidden flex-col">
+    <main className="min-h-screen flex flex-col md:flex-row bg-gray-50 dark:bg-gray-900 transition-colors duration-500">
+      {/* Form container */}
+      <section className="flex flex-1 flex-col justify-center items-center px-6 py-12 md:py-24 md:px-16 max-w-lg mx-auto md:max-w-none md:mx-0">
         <Form />
-        <div
-          className="flex w-full text-xs text-center gap-2 py-4 
-       text-gray-500 mt-auto  max-w-md mx-auto items-center justify-center"
-        >
+        <footer className="mt-12 text-center text-xs text-gray-400 dark:text-gray-500 select-none">
           © 2025 SERVI Toons. Tous droits réservés.
-        </div>
-      </div>
-      {/* image */}
-      <div className="w-full md:h-full ">
+        </footer>
+      </section>
+
+      {/* Images container - visible uniquement sur md+ */}
+      <section className="hidden md:flex flex-1 relative overflow-hidden">
         <SignInImages />
-      </div>
-
-      {/* form small screen */}
-      <div className="w-full flex-1 md:hidden flex flex-col gap-6">
-        <Form />
-
-        <div
-          className="flex w-full text-xs text-center gap-2 pb-4 
-       text-gray-500 mt-auto max-w-md mx-auto items-center justify-center"
-        >
-          © 2025 SERVI Toons. Tous droits réservés.
-        </div>
-      </div>
-    </div>
+        {/* Overlay doux pour fondu */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/40 pointer-events-none" />
+      </section>
+    </main>
   );
 };
 

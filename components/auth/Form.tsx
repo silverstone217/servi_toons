@@ -1,10 +1,11 @@
 "use client";
+
 import React, { useState } from "react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { FaFacebook, FaGoogle } from "react-icons/fa";
 import { useRouter } from "next/navigation";
@@ -16,7 +17,6 @@ const Form = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const [showPassword, setShowPassword] = useState(false);
   const [isSignin, setIsSignin] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -25,219 +25,223 @@ const Form = () => {
   const handleSubmitWithGoogle = async () => {
     try {
       await signIn("google");
-    } catch (error) {
-      console.log(error);
+    } catch {
       toast.error(
-        "Impossible de vous connceter avec google, veuillez reéssayer!"
+        "Impossible de vous connecter avec Google, veuillez réessayer !"
       );
     }
   };
 
   const handleSubmit = async () => {
+    if (loading) return;
     setLoading(true);
-    try {
-      if (isEmptyString(email) || isEmptyString(password)) {
-        toast.error("Veuillez remplir tous les champs avant de soumettre");
-        return;
-      }
 
-      //   login process
-      const formData = { email: email.trim(), password: password.trim() };
+    if (
+      isEmptyString(email) ||
+      isEmptyString(password) ||
+      (!isSignin && isEmptyString(name))
+    ) {
+      toast.error("Veuillez remplir tous les champs requis avant de soumettre");
+      setLoading(false);
+      return;
+    }
+
+    try {
       if (isSignin) {
-        const signUser = await login(formData);
-        if (signUser?.error) {
-          toast.error(signUser.message);
+        const res = await login({
+          email: email.trim(),
+          password: password.trim(),
+        });
+        if (res?.error) {
+          toast.error(res.message);
+          setLoading(false);
           return;
         }
-        toast.success("Connexion réussie!");
-        router.refresh();
-        location.reload();
-        return;
+        toast.success("Connexion réussie !");
+      } else {
+        const res = await createNewUser({
+          name: name.trim(),
+          email: email.trim(),
+          password: password.trim(),
+        });
+        if (res?.error) {
+          toast.error(res.message);
+          setLoading(false);
+          return;
+        }
+        toast.success("Inscription réussie ! Bienvenue parmi nous.");
       }
-
-      //   signup process
-      if (isEmptyString(name)) {
-        toast.error("Veuillez renseigner votre nom avant de soumettre");
-        return;
-      }
-
-      const formDataSign = {
-        name: name.trim(),
-        email: email.trim(),
-        password: password.trim(),
-      };
-      const createUser = await createNewUser(formDataSign);
-      if (createUser?.error) {
-        toast.error(createUser.message);
-        return;
-      }
-      toast.success("Inscription réussie! Bienvenue parmi nous!.");
       router.refresh();
       location.reload();
-    } catch (error) {
-      console.log(error);
+    } catch {
       toast.error("Une erreur s'est produite, veuillez réessayer.");
     } finally {
-      setTimeout(() => setLoading(false), 3000);
+      setLoading(false);
     }
   };
 
   return (
-    <div
-      className="w-full md:flex-1 md:overflow-hidden flex flex-col gap-6 md:gap-16 max-w-md mx-auto
-     justify-center 
-    "
-    >
-      {/* Text top welcome */}
-      <div className="space-y-2 lg:space-y-3">
-        <h2 className="text-2xl lg:text-4xl font-extrabold tracking-tight text-balance max-w-md">
-          {isSignin ? "Re-Bonjour" : "Bienvenue"} sur <span>SERVI</span>{" "}
-          <span className="text-primary">Toons</span>
-        </h2>
-        <p className="text-sm max-w-md">
-          Connectez-vous et profiter des meilleurs mangas, webtoons et light
-          novels de la plateforme.
+    <div className="w-full max-w-md mx-auto space-y-10">
+      {/* Header */}
+      <div className="text-center space-y-3">
+        <h1 className="text-4xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">
+          {isSignin ? "Re-Bonjour" : "Bienvenue"} sur{" "}
+          <span className="text-primary">SERVI Toons</span>
+        </h1>
+        <p className="text-gray-600 dark:text-gray-400 text-sm max-w-xs mx-auto">
+          {isSignin
+            ? "Connectez-vous pour profiter des meilleurs mangas, webtoons et light novels."
+            : "Créez un compte pour rejoindre la communauté."}
         </p>
       </div>
 
       {/* Form */}
-      <form className="md:space-y-6 space-y-4 w-full ">
-        {/* name */}
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSubmit();
+        }}
+        className="space-y-6"
+        noValidate
+      >
         {!isSignin && (
-          <div className="grid w-full  items-center gap-1.5">
-            <Label htmlFor="name">Nom</Label>
+          <div>
+            <Label htmlFor="name" className="text-gray-700 dark:text-gray-300">
+              Nom
+            </Label>
             <Input
               id="name"
               type="text"
+              placeholder="Jean"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              required={isSignin ? false : true}
-              className="w-full text-sm font-medium"
+              disabled={loading}
+              maxLength={40}
+              required={!isSignin}
               autoComplete="given-name"
               autoFocus
-              disabled={isSignin}
-              placeholder="Jean "
-              maxLength={40}
+              className="dark:bg-gray-800 dark:text-gray-100"
             />
           </div>
         )}
 
-        {/* email */}
-        <div className="grid w-full  items-center gap-1.5">
-          <Label htmlFor="email">Email</Label>
+        <div>
+          <Label htmlFor="email" className="text-gray-700 dark:text-gray-300">
+            Email
+          </Label>
           <Input
             id="email"
             type="email"
+            placeholder="jean@exemple.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full text-sm font-medium"
-            autoComplete="email"
-            placeholder="jean@exemple.com"
+            disabled={loading}
             maxLength={40}
+            required
+            autoComplete="email"
+            className="dark:bg-gray-800 dark:text-gray-100"
           />
         </div>
 
-        {/* password */}
-        <div className="grid w-full  items-center gap-1.5">
-          <Label htmlFor="password">Mot de passe</Label>
+        <div>
+          <Label
+            htmlFor="password"
+            className="text-gray-700 dark:text-gray-300"
+          >
+            Mot de passe
+          </Label>
           <div className="relative">
             <Input
               id="password"
               type={showPassword ? "text" : "password"}
+              placeholder="********"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full text-sm font-medium"
-              autoComplete="current-password"
-              placeholder="********"
+              disabled={loading}
               maxLength={12}
-              min={6}
+              minLength={6}
+              required
+              autoComplete={isSignin ? "current-password" : "new-password"}
+              className="dark:bg-gray-800 dark:text-gray-100"
             />
             <button
               type="button"
-              className="absolute right-0 top-0 p-2 text-sm font-medium text-gray-600 
-              transition-all duration-300 ease-in-out focus:outline-none cursor-pointer"
+              aria-label={
+                showPassword
+                  ? "Masquer le mot de passe"
+                  : "Afficher le mot de passe"
+              }
+              className="absolute right-3 top-3 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition"
               onClick={() => setShowPassword(!showPassword)}
+              tabIndex={-1}
             >
-              {!showPassword ? <EyeOff /> : <Eye />}
+              {showPassword ? <Eye /> : <EyeOff />}
             </button>
           </div>
         </div>
 
-        {/* forget password */}
         {isSignin && (
-          <div className="text-sm flex w-full items-center justify-end">
-            <Link
-              href="#"
-              className="text-xs text-gray-600 hover:opacity-70
-              transition-all duration-300 ease-in-out"
-            >
-              Mot de passe oublié?
+          <div className="text-right text-sm">
+            <Link href="#" className="text-primary hover:underline">
+              Mot de passe oublié ?
             </Link>
           </div>
         )}
-        {/* submit */}
+
         <Button
-          className="w-full cursor-pointer"
-          onClick={(e) => {
-            e.preventDefault();
-            handleSubmit();
-          }}
+          type="submit"
           disabled={loading || isEmptyString(email) || isEmptyString(password)}
+          className="w-full py-3 text-sm font-semibold rounded-lg shadow-md transition-colors"
         >
           {loading ? "En cours..." : isSignin ? "Se connecter" : "S'inscrire"}
         </Button>
-
-        {/* or */}
-        <div className="flex w-full items-center justify-center">
-          <span className="text-sm">Ou</span>
-        </div>
-        {/* social media */}
-        <div className="flex flex-col w-full items-center gap-4 md:gap-6">
-          {/* Google */}
-          <Button
-            variant={"secondary"}
-            type="button"
-            className="w-full flex items-center gap-3 cursor-pointer"
-            disabled={loading}
-            onClick={handleSubmitWithGoogle}
-          >
-            <FaGoogle className="h-5 w-5 " />
-            <span>Continuer avec Google</span>
-          </Button>
-
-          {/* Facebook */}
-          <Button
-            variant={"secondary"}
-            type="button"
-            className="w-full flex items-center gap-3 cursor-pointer"
-            disabled
-          >
-            <FaFacebook className="h-5 w-5 " />
-            <span>Continuer avec Facebook</span>
-          </Button>
-        </div>
-        {/* signin or signup */}
-        <div className="flex w-full items-center gap-2 justify-center  lg:pb-0 mt-4 text-sm">
-          <span>
-            {isSignin
-              ? "Vous n'avez pas de compte?"
-              : "Vous avez deja un compte"}
-          </span>
-          <button
-            type="button"
-            onClick={() => setIsSignin(!isSignin)}
-            className=" text-gray-400 hover:text-gray-700 cursor-pointer
-            transition-all duration-300 ease-in-out"
-            disabled={loading}
-          >
-            {isSignin ? "S'inscrire" : "Se connecter"}
-          </button>
-        </div>
       </form>
 
-      {/* ALl right reserved */}
+      {/* Separator */}
+      <div className="flex items-center justify-center gap-3 text-gray-400 dark:text-gray-500">
+        <span className="h-px w-10 bg-gray-300 dark:bg-gray-700"></span>
+        <span>Ou</span>
+        <span className="h-px w-10 bg-gray-300 dark:bg-gray-700"></span>
+      </div>
+
+      {/* Social buttons */}
+      <div className="flex flex-col gap-4">
+        <Button
+          variant="outline"
+          disabled={loading}
+          onClick={handleSubmitWithGoogle}
+          className="flex items-center justify-center 
+          gap-3 py-3 text-sm font-semibold rounded-lg"
+        >
+          <FaGoogle className="h-6 w-6" />
+          Continuer avec Google
+        </Button>
+
+        <Button
+          variant="outline"
+          disabled
+          className="flex items-center justify-center gap-3 py-3 
+          text-sm font-semibold rounded-lg cursor-not-allowed opacity-50"
+        >
+          <FaFacebook className="h-6 w-6" />
+          Continuer avec Facebook
+        </Button>
+      </div>
+
+      {/* Toggle signin/signup */}
+      <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-6">
+        {isSignin
+          ? "Vous n'avez pas de compte ?"
+          : "Vous avez déjà un compte ?"}{" "}
+        <button
+          type="button"
+          onClick={() => setIsSignin(!isSignin)}
+          disabled={loading}
+          className="text-primary font-semibold hover:underline"
+        >
+          {isSignin ? "S'inscrire" : "Se connecter"}
+        </button>
+      </p>
     </div>
   );
 };

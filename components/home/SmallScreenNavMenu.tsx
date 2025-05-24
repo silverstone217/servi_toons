@@ -1,4 +1,5 @@
 "use client";
+
 import React from "react";
 import SheetComponent from "../SheetComponent";
 import { AlignJustify } from "lucide-react";
@@ -12,73 +13,51 @@ import { SwitchThemSmallScreen } from "../themes/SwitchTheme";
 
 const SmallScreenNavMenu = () => {
   const user = useCurrentUser();
+
   return (
     <SheetComponent
-      title="Servi Toons"
-      description="Liser et savourer les meilleurs contenus diponibles dans la platefome."
       side="left"
+      title="Servi Toons"
+      description="Lisez et savourez les meilleurs contenus disponibles sur la plateforme."
       trigger={
-        <Button variant={"ghost"} size={"icon"}>
-          <AlignJustify className="size-6" />
+        <Button variant="ghost" size="icon" aria-label="Ouvrir le menu">
+          <AlignJustify className="w-6 h-6 text-gray-700 dark:text-gray-300" />
         </Button>
       }
       content={
-        <div className="flex flex-col p-4 flex-1 border-t gap-4">
-          {/* links */}
-          <nav className="flex flex-col gap-4 flex-1 pb-4 border-b">
-            {HomeLinksPage.map((lk, i) => (
-              <SheetClose asChild key={i}>
-                <Link href={lk.href}>
-                  <div
-                    className="font-medium p-2
-                transition-all ease-in-out duration-500 shrink-0
-                flex items-center w-full gap-4 hover:bg-primary
-                "
-                  >
-                    <lk.icon className="shrink-0 size-6" />
-                    <span>{lk.label}</span>
-                  </div>
-                </Link>
-              </SheetClose>
-            ))}
-
-            {/* additionnal links */}
-            {HomeLinksPageAdd.map((lk, i) => (
-              <SheetClose asChild key={i}>
-                <Link href={lk.href}>
-                  <div
-                    className="font-medium p-2
-                transition-all ease-in-out duration-500 shrink-0
-                flex items-center w-full gap-4 hover:bg-primary
-                "
-                  >
-                    <lk.icon className="shrink-0 size-6" />
-                    <span>{lk.label}</span>
+        <div className="flex flex-col h-full p-6 gap-6">
+          {/* Navigation Links */}
+          <nav className="flex flex-col gap-4 border-b border-gray-200 dark:border-gray-700 pb-6">
+            {[...HomeLinksPage, ...HomeLinksPageAdd].map((link, idx) => (
+              <SheetClose asChild key={idx}>
+                <Link href={link.href}>
+                  <div className="flex items-center gap-4 p-3 rounded-md text-gray-800 dark:text-gray-200 hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors">
+                    <link.icon className="w-6 h-6 flex-shrink-0 text-primary" />
+                    <span className="font-medium">{link.label}</span>
                   </div>
                 </Link>
               </SheetClose>
             ))}
           </nav>
 
-          {/* others btn and login */}
-          <div className="w-full flex flex-row-reverse items-center gap-4 flex-wrap">
+          {/* Bottom actions: User & Theme */}
+          <div className="flex items-center justify-between">
             {!user ? (
               <SheetClose asChild>
-                <Link href={"/connexion"}>
-                  <Button>
-                    <span>Connexion</span>
+                <Link href="/connexion">
+                  <Button size="sm" className="w-full">
+                    Connexion
                   </Button>
                 </Link>
               </SheetClose>
             ) : (
               <SheetClose asChild>
-                <Link href={"/profil"}>
+                <Link href="/profil" aria-label="Profil utilisateur">
                   <AvatarUser />
                 </Link>
               </SheetClose>
             )}
 
-            {/* Theme */}
             <SwitchThemSmallScreen />
           </div>
         </div>
